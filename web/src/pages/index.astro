@@ -1,15 +1,16 @@
 ---
-import '../styles/global.css';
+import Base from '../layouts/Base.astro';
+import { carregarCliente } from '../lib/cliente.ts';
+
+// Placeholder page: the real dashboards come in WEB-02.x.
+const cliente = carregarCliente();
 ---
 
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
-    <title>Painel</title>
-  </head>
-  <body class="p-6 font-sans">
-    <h1 class="text-2xl font-semibold">Painel em construção</h1>
-  </body>
-</html>
+<Base>
+  <h1 class="text-2xl font-semibold">{cliente.nome}</h1>
+  <p class="mt-2">Template: {cliente.template}</p>
+  <h2 class="mt-6 text-lg font-semibold">KPIs ativos</h2>
+  <ul class="mt-2 list-disc pl-6">
+    {cliente.kpis_ativos.map((kpi) => <li>{kpi}</li>)}
+  </ul>
+</Base>

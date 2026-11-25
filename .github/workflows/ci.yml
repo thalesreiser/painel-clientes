@@ -61,14 +61,31 @@ jobs:
       - run: uv run dbt parse --project-dir dbt --profiles-dir dbt
       - run: uv run dbt build --project-dir dbt --profiles-dir dbt
 
+  demos:
+    name: demos
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.find.outputs.list }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: List demo JSON files in clientes/
+        id: find
+        run: |
+          list=$(find clientes -maxdepth 1 -name '*.json' -printf '%f\n' | sed 's/\.json$//' \
+            | sort | jq -R . | jq -sc .)
+          echo "list=$list" >> "$GITHUB_OUTPUT"
+          echo "Demos: $list"
+
   web:
     name: web (${{ matrix.demo }})
+    needs: demos
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # TODO: one entry per demo JSON in clientes/ once they exist; "default" builds the scaffold.
-        demo: [default]
+        demo: ${{ fromJSON(needs.demos.outputs.list) }}
+    env:
+      CLIENTE: ${{ matrix.demo }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -109,7 +126,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [commitlint, python, dbt, web, clientes-json]
+    needs: [commitlint, python, dbt, demos, web, clientes-json]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any job failed or was cancelled
