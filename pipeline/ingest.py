@@ -27,6 +27,7 @@ from pipeline.config import COLUNAS_OBRIGATORIAS, Cliente, load_cliente
 TIPOS_SQL = {"dt_": "DATE", "vl_": "DECIMAL(18, 2)", "nr_": "BIGINT"}
 _NUMERO_BR = re.compile(r"^-?\d{1,3}(\.\d{3})*(,\d+)?$|^-?\d+(,\d+)?$")
 _NUMERO_ISO = re.compile(r"^-?\d+(\.\d+)?$")
+_MILHAR = re.compile(r"^-?\d{1,3}(\.\d{3})+$")
 
 
 class ConversaoError(ValueError):
@@ -63,7 +64,8 @@ def converter_valor(valor: Any) -> Decimal:
     if isinstance(valor, int | float | Decimal) and not isinstance(valor, bool):
         return Decimal(str(valor)).quantize(Decimal("0.01"))
     texto = _texto(valor).replace("R$", "").replace(" ", "").replace(" ", "")
-    if _NUMERO_BR.match(texto) and ("," in texto or not _NUMERO_ISO.match(texto)):
+    # Without a comma, "1.500" / "12.345.678" (3-digit groups) are thousands; "1.5" is decimal.
+    if _NUMERO_BR.match(texto) and ("," in texto or _MILHAR.match(texto)):
         texto = texto.replace(".", "").replace(",", ".")
     elif not _NUMERO_ISO.match(texto):
         raise ConversaoError(f"valor inválido '{_texto(valor)}' (use 1.234,56)")
