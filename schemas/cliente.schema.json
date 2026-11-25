@@ -17,7 +17,11 @@
       "required": ["tipo", "arquivos", "mapeamento_colunas"],
       "properties": {
         "tipo": { "enum": ["csv", "xlsx"], "description": "contaazul is reserved for INT-01" },
-        "arquivos": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "arquivos": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
         "mapeamento_colunas": {
           "type": "object",
           "description": "Canonical column -> column name in the client's file",
