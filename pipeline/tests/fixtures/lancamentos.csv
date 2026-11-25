@@ -1,0 +1,6 @@
+Código;Vencimento;Valor (R$);Tipo;Categoria;Pagamento
+L1; 05/01/2026 ;R$ 1.234,56;receita; Serviços ;2026-01-06
+L2;2026-01-10;-89,90;despesa;Aluguel;
+L3;31/02/2026;10,00;despesa;Energia;
+L4;15/01/2026;abc;receita;Serviços;
+L5;20/01/2026;50,00;despesa;;
