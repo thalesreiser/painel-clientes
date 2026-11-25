@@ -11,6 +11,8 @@ const cliente = carregarCliente();
   <p class="mt-2">Template: {cliente.template}</p>
   <h2 class="mt-6 text-lg font-semibold">KPIs ativos</h2>
   <ul class="mt-2 list-disc pl-6">
-    {cliente.kpis_ativos.map((kpi) => <li>{kpi}</li>)}
+    {cliente.kpis_ativos.map((kpi) => (
+      <li>{kpi}</li>
+    ))}
   </ul>
 </Base>
