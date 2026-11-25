@@ -50,7 +50,7 @@ models:
       - name: nm_feriado
         description: Holiday name; null when `fl_feriado` is false.
       - name: tp_feriado
-        description: "`FIXO` (fixed date) or `MOVEL` (Easter-based); null when not a holiday."
+        description: '`FIXO` (fixed date) or `MOVEL` (Easter-based); null when not a holiday.'
       - name: fl_dia_util
         description: True on a weekday that is not a national holiday.
         data_tests: [not_null]
