@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import { carregarCliente } from '../lib/cliente.ts';
+
+interface Props {
+  titulo?: string;
+}
+
+const cliente = carregarCliente();
+const { titulo = cliente.marca.nome } = Astro.props;
+---
+
+<html lang="pt-BR" style={`--cor-primaria:${cliente.marca.cor_primaria}`}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{titulo}</title>
+  </head>
+  <body class="flex min-h-screen flex-col font-sans">
+    <header class="border-b-4 border-primaria px-6 py-4">
+      <p class="text-lg font-semibold">{cliente.marca.nome}</p>
+    </header>
+    <main class="flex-1 p-6">
+      <slot />
+    </main>
+    <footer class="border-t px-6 py-4 text-sm">
+      {/* Placeholder: footer content is defined in WEB-01.3. */}
+      <p>{cliente.marca.preparado_por ?? cliente.marca.nome}</p>
+    </footer>
+  </body>
+</html>

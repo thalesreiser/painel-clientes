@@ -1,0 +1,20 @@
+{
+  "id": "teste-financeiro",
+  "nome": "Empresa Fictícia",
+  "template": "financeiro",
+  "fonte": {
+    "tipo": "csv",
+    "arquivos": ["lancamentos.csv"],
+    "separador": ";",
+    "mapeamento_colunas": {
+      "id_lancamento": "Código",
+      "dt_vencimento": "Vencimento",
+      "dt_pagamento": "Pagamento",
+      "vl_lancamento": "Valor (R$)",
+      "tp_lancamento": "Tipo",
+      "nm_categoria": "Categoria"
+    }
+  },
+  "kpis_ativos": ["receita"],
+  "marca": { "nome": "Empresa Fictícia", "cor_primaria": "#123456" }
+}

@@ -1,1 +1,6 @@
 @import 'tailwindcss';
+
+/* --cor-primaria is set per client on <html> by the base layout (marca.cor_primaria). */
+@theme inline {
+  --color-primaria: var(--cor-primaria);
+}
