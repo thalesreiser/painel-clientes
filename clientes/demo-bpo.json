@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/cliente.schema.json",
+  "id": "demo-bpo",
+  "nome": "Contábil Horizonte (demo)",
+  "template": "financeiro",
+  "fonte": {
+    "tipo": "csv",
+    "arquivos": ["dados/demo-bpo/lancamentos.csv"],
+    "separador": ";",
+    "encoding": "utf-8",
+    "mapeamento_colunas": {
+      "id_lancamento": "Código",
+      "dt_competencia": "Competência",
+      "dt_vencimento": "Vencimento",
+      "dt_pagamento": "Data de pagamento",
+      "vl_lancamento": "Valor (R$)",
+      "tp_lancamento": "Tipo",
+      "nm_categoria": "Categoria",
+      "nm_conta": "Conta bancária",
+      "nm_contraparte": "Cliente/Fornecedor"
+    }
+  },
+  "kpis_ativos": [
+    "receita",
+    "despesa",
+    "resultado",
+    "fluxo_caixa_realizado",
+    "fluxo_caixa_previsto",
+    "contas_pagar_vencidas",
+    "contas_receber_vencidas",
+    "top_categorias",
+    "comparativo_mes_anterior",
+    "comparativo_ano_anterior"
+  ],
+  "marca": {
+    "nome": "Contábil Horizonte",
+    "cor_primaria": "#1F6FEB",
+    "preparado_por": "Contábil Horizonte BPO Financeiro"
+  },
+  "fuso": "America/Sao_Paulo"
+}

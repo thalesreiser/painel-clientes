@@ -1,0 +1,33 @@
+{
+  "$schema": "../schemas/cliente.schema.json",
+  "id": "demo-transportadora",
+  "nome": "Rota Serrana Transportes (demo)",
+  "template": "entregas",
+  "fonte": {
+    "tipo": "xlsx",
+    "arquivos": ["dados/demo-transportadora/entregas.xlsx"],
+    "aba": "Entregas",
+    "mapeamento_colunas": {
+      "id_entrega": "Nº CT-e",
+      "dt_coleta": "Coleta",
+      "dt_prevista": "Previsão",
+      "dt_entrega": "Entregue em",
+      "nm_cliente": "Destinatário",
+      "nm_rota": "Rota",
+      "tp_status": "Status",
+      "tp_ocorrencia": "Ocorrência",
+      "nr_volumes": "Volumes"
+    }
+  },
+  "kpis_ativos": [
+    "entregas_por_dia",
+    "taxa_no_prazo",
+    "ocorrencias",
+    "desempenho_por_cliente",
+    "desempenho_por_rota"
+  ],
+  "marca": {
+    "nome": "Rota Serrana Transportes",
+    "cor_primaria": "#0F766E"
+  }
+}
