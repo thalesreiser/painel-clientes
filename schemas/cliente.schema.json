@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/thalesreiser/painel-clientes/schemas/cliente.schema.json",
+  "title": "Cliente",
+  "description": "Per-client dashboard configuration (RF-01). Authorised e-mails are NOT here (ADR 003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "nome", "template", "fonte", "kpis_ativos", "marca"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "nome": { "type": "string", "minLength": 1 },
+    "template": { "enum": ["financeiro", "entregas"] },
+    "fonte": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tipo", "arquivos", "mapeamento_colunas"],
+      "properties": {
+        "tipo": { "enum": ["csv", "xlsx"], "description": "contaazul is reserved for INT-01" },
+        "arquivos": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "mapeamento_colunas": {
+          "type": "object",
+          "description": "Canonical column -> column name in the client's file",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "separador": { "type": "string", "minLength": 1, "maxLength": 1 },
+        "aba": { "type": "string", "minLength": 1 },
+        "encoding": { "type": "string", "minLength": 1 }
+      }
+    },
+    "kpis_ativos": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    },
+    "marca": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nome", "cor_primaria"],
+      "properties": {
+        "nome": { "type": "string", "minLength": 1 },
+        "logo": { "type": "string", "minLength": 1 },
+        "cor_primaria": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "preparado_por": { "type": "string", "minLength": 1 }
+      }
+    },
+    "fuso": { "type": "string", "minLength": 1, "default": "America/Sao_Paulo" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "template": { "const": "financeiro" } } },
+      "then": {
+        "properties": {
+          "kpis_ativos": { "items": { "$ref": "#/$defs/kpis_financeiro" } },
+          "fonte": {
+            "properties": { "mapeamento_colunas": { "$ref": "#/$defs/colunas_financeiro" } }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "template": { "const": "entregas" } } },
+      "then": {
+        "properties": {
+          "kpis_ativos": { "items": { "$ref": "#/$defs/kpis_entregas" } },
+          "fonte": {
+            "properties": { "mapeamento_colunas": { "$ref": "#/$defs/colunas_entregas" } }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "kpis_financeiro": {
+      "enum": [
+        "receita",
+        "despesa",
+        "resultado",
+        "fluxo_caixa_realizado",
+        "fluxo_caixa_previsto",
+        "contas_pagar_vencidas",
+        "contas_receber_vencidas",
+        "top_categorias",
+        "comparativo_mes_anterior",
+        "comparativo_ano_anterior"
+      ]
+    },
+    "kpis_entregas": {
+      "enum": [
+        "entregas_por_dia",
+        "taxa_no_prazo",
+        "ocorrencias",
+        "desempenho_por_cliente",
+        "desempenho_por_rota"
+      ]
+    },
+    "colunas_financeiro": {
+      "type": "object",
+      "required": ["dt_vencimento", "vl_lancamento", "tp_lancamento", "nm_categoria"],
+      "propertyNames": {
+        "enum": [
+          "id_lancamento",
+          "dt_competencia",
+          "dt_vencimento",
+          "dt_pagamento",
+          "vl_lancamento",
+          "tp_lancamento",
+          "nm_categoria",
+          "nm_conta",
+          "nm_contraparte"
+        ]
+      }
+    },
+    "colunas_entregas": {
+      "type": "object",
+      "required": ["id_entrega", "dt_prevista", "dt_entrega", "nm_cliente", "tp_status"],
+      "propertyNames": {
+        "enum": [
+          "id_entrega",
+          "dt_coleta",
+          "dt_prevista",
+          "dt_entrega",
+          "nm_cliente",
+          "nm_rota",
+          "tp_status",
+          "tp_ocorrencia",
+          "nr_volumes"
+        ]
+      }
+    }
+  }
+}
