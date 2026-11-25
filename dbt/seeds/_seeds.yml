@@ -18,7 +18,7 @@ seeds:
         description: Holiday name (no accents).
         data_tests: [not_null]
       - name: tp_feriado
-        description: "`FIXO` (fixed date) or `MOVEL` (Easter-based)."
+        description: '`FIXO` (fixed date) or `MOVEL` (Easter-based).'
         data_tests:
           - not_null
           - accepted_values:
