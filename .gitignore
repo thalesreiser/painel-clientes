@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+*.duckdb
+*.duckdb.wal
+.env
+.env.*
+!.env.example

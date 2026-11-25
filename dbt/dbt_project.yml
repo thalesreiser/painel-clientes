@@ -1,0 +1,17 @@
+name: painel
+version: '0.1.0'
+config-version: 2
+profile: painel
+
+model-paths: ['models']
+test-paths: ['tests']
+macro-paths: ['macros']
+
+models:
+  painel:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

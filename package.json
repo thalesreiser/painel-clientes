@@ -1,0 +1,24 @@
+{
+  "name": "painel-clientes",
+  "private": true,
+  "type": "module",
+  "workspaces": ["web"],
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run check --workspace web",
+    "build": "npm run build --workspace web"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^1.1.2",
+    "typescript-eslint": "^8.74.0"
+  }
+}
