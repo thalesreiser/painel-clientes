@@ -1,0 +1,6 @@
+package-lock.json
+uv.lock
+dist/
+.astro/
+dbt/target/
+docs/
