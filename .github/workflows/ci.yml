@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  commitlint:
+    name: commitlint
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Lint PR commits
+        run: >-
+          npx --no-install commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+          --verbose
+
+  python:
+    name: python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version-file: .python-version
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest
+
+  dbt:
+    name: dbt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version-file: .python-version
+          enable-cache: true
+      - run: uv sync --locked
+      # TODO: once demo seeds/models exist, run dbt build per demo (matrix over clientes/).
+      - run: uv run dbt parse --project-dir dbt --profiles-dir dbt
+      - run: uv run dbt build --project-dir dbt --profiles-dir dbt
+
+  web:
+    name: web (${{ matrix.demo }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO: one entry per demo JSON in clientes/ once they exist; "default" builds the scaffold.
+        demo: [default]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx --no-install eslint .
+      - run: npx --no-install prettier --check .
+      - run: npm run check
+      - run: npm run build
+
+  clientes-json:
+    name: clientes-json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version-file: .python-version
+          enable-cache: true
+      - name: Validate clientes/*.json against schema
+        run: |
+          shopt -s nullglob globstar
+          schema=schemas/cliente.schema.json
+          files=(clientes/**/*.json)
+          if [ ! -f "$schema" ]; then
+            # TODO(DAD-01.1): schema not merged yet; remove this skip once it lands.
+            echo "::notice::$schema not found, skipping validation (DAD-01.1)."
+            exit 0
+          fi
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::notice::No JSON files in clientes/, nothing to validate."
+            exit 0
+          fi
+          uvx --from check-jsonschema==0.33.2 check-jsonschema --schemafile "$schema" "${files[@]}"
+
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [commitlint, python, dbt, web, clientes-json]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
+      - run: echo "All CI jobs passed."
