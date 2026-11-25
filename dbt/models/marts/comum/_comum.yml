@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: dim_data
+    description: >
+      Shared calendar dimension. Grain: one row per calendar day (`dt_data`), from 2024-01-01
+      to 2028-12-31. `fl_dia_util` is a weekday that is not a Brazilian national holiday
+      (seed `feriados_nacionais`; no state or municipal holidays).
+    columns:
+      - name: dt_data
+        description: Calendar date; the key facts join on.
+        data_tests: [not_null, unique]
+      - name: dt_inicio_mes
+        description: First day of the month.
+        data_tests: [not_null]
+      - name: dt_fim_mes
+        description: Last day of the month.
+        data_tests: [not_null]
+      - name: nr_ano
+        description: Year.
+        data_tests: [not_null]
+      - name: nr_trimestre
+        description: Quarter (1-4).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+      - name: nr_mes
+        description: Month (1-12).
+        data_tests: [not_null]
+      - name: nr_dia
+        description: Day of the month.
+        data_tests: [not_null]
+      - name: nr_dia_semana
+        description: ISO weekday, 1 = Monday ... 7 = Sunday.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+      - name: fl_fim_de_semana
+        description: True on Saturday and Sunday.
+        data_tests: [not_null]
+      - name: fl_feriado
+        description: True on a national holiday.
+        data_tests: [not_null]
+      - name: nm_feriado
+        description: Holiday name; null when `fl_feriado` is false.
+      - name: tp_feriado
+        description: "`FIXO` (fixed date) or `MOVEL` (Easter-based); null when not a holiday."
+      - name: fl_dia_util
+        description: True on a weekday that is not a national holiday.
+        data_tests: [not_null]
