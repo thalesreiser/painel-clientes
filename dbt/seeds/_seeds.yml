@@ -1,0 +1,26 @@
+version: 2
+
+seeds:
+  - name: feriados_nacionais
+    description: >
+      Brazilian national holidays, 2024-2028 (public data, taken from dbt-dw-api). Carnival
+      Monday and Tuesday are listed as non-working days, although they are optional by law.
+    config:
+      column_types:
+        dt_feriado: date
+        nm_feriado: varchar
+        tp_feriado: varchar
+    columns:
+      - name: dt_feriado
+        description: Holiday date.
+        data_tests: [not_null, unique]
+      - name: nm_feriado
+        description: Holiday name (no accents).
+        data_tests: [not_null]
+      - name: tp_feriado
+        description: "`FIXO` (fixed date) or `MOVEL` (Easter-based)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [FIXO, MOVEL]
